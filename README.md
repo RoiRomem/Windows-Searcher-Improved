@@ -138,11 +138,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built on the foundation of the original [Windows Searcher](https://github.com/RoiRomem/Windows-Searcher) project
 - Powered by [Dear ImGui](https://github.com/ocornut/imgui) for the user interface
-- Uses Segoe UI font for native Windows appearance
+- Uses Segoe UI font (For now)
 
 ## Changelog
 
-### v2.0 (WSI)
+### v0.1b (WSI)
 - Complete rewrite with Dear ImGui
 - Improved performance and responsiveness  
 - Modern C++17 codebase
@@ -150,6 +150,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Better DPI handling
 - Cleaner, more intuitive interface
 
----
-
-*WSI - Making Windows application launching fast and effortless.*
+### Status
+- 70% done with the rewrite in **Dear ImGui**
+- Yet to write any of the new features
