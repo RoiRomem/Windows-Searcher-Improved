@@ -1,0 +1,40 @@
+# Ignore CLion / JetBrains IDE config
+.idea/
+
+# Ignore CMake build folder
+cmake-build-debug/
+cmake-build-release/
+cmake-build-*/
+
+# Ignore general CMake junk
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Windows build artifacts
+*.obj
+*.pdb
+*.exe
+*.ilk
+*.log
+
+# Unix build artifacts
+*.o
+*.so
+*.a
+*.out
+
+# Generated files
+*.user
+*.ncb
+*.suo
+
+# Optional: ignore ImGui demos/extra if you're not using them
+# external/imgui/examples/
+# external/imgui/backends/imgui_impl_*_example.*
