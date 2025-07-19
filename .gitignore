@@ -34,7 +34,3 @@ Thumbs.db
 *.user
 *.ncb
 *.suo
-
-# Optional: ignore ImGui demos/extra if you're not using them
-# external/imgui/examples/
-# external/imgui/backends/imgui_impl_*_example.*
