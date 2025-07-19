@@ -150,6 +150,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Better DPI handling
 - Cleaner, more intuitive interface
 
+## Future
+
 ### Status
 - 70% done with the rewrite in **Dear ImGui**
 - Yet to write any of the new features
+
+### Future features
+
+- In app advance calculator
+- JSON settings file
+- In app settings
+- Custom keybinds
+- Custom commands
+- Custom directories
+- Lua integration for mods?
+- Community suggestions

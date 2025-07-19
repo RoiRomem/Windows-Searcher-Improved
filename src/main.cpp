@@ -8,6 +8,8 @@
 
 #include "main.h"
 
+#include <iostream>
+
 #include "InputBuf/InputBuf.h"
 
 const auto app = std::make_unique<App>(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -19,6 +21,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     ImGui_ImplWin32_EnableDpiAwareness();
     float MainScale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
 
+    int scaledWidth = static_cast<int>(WINDOW_WIDTH * MainScale);
+    int scaledHeight = static_cast<int>(WINDOW_HEIGHT * MainScale);
+
     // Create application window
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"WSI", nullptr };
     ::RegisterClassExW(&wc);
@@ -27,9 +32,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         wc.lpszClassName,
         L"",
         WS_POPUP,
-        (GetSystemMetrics(SM_CXSCREEN) - WINDOW_WIDTH) / 2,
-        (GetSystemMetrics(SM_CYSCREEN) - WINDOW_HEIGHT) / 2,
-        WINDOW_WIDTH, WINDOW_HEIGHT,
+        (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2,
+        (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2,
+        scaledWidth, scaledHeight,
         nullptr, nullptr, wc.hInstance, nullptr
     );
 
@@ -248,12 +253,16 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     case WM_KEYDOWN:
         if (wParam == VK_DOWN) app->inputBuf->IncreaseIndex();
         else if (wParam == VK_UP) app->inputBuf->DecreaseIndex();
-        else if (wParam == VK_ESCAPE) app->active = false;
+        else if (wParam == VK_ESCAPE) {
+            app->active = false;
+            app->inputBuf->ClearSearch();
+        };
         break;
 
         case WM_HOTKEY:
             if (wParam == 0) return 0;
             app->active = !app->active;
+            app->inputBuf->ClearSearch();
             break;
     default: ;
     }

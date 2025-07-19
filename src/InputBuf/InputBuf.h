@@ -59,6 +59,9 @@ public:
     void Draw();
     void IncreaseIndex() { ++currentIndex; }
     void DecreaseIndex() { --currentIndex; }
+    void ClearSearch() {
+        inputBuf[0] = '\0';
+    }
 };
 
 #endif //INPUTBUF_H

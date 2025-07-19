@@ -44,9 +44,9 @@ void InputBuf::Draw()
         // here we will handle Activating ts
         if (currentFinding.first.empty() && currentFinding.second.empty()) {
             if (ToLower(GetBuffer()) == "exit") app->done = true;
-            else Runner::RunAction(string_to_wstring(GetBuffer()));
+            else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else {
-            Runner::RunAction(currentFinding.second);
+            if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         }
         inputBuf[0] = 0;
     }
@@ -124,11 +124,11 @@ void InputBuf::InputLogic() {
         currentFinding = std::pair<std::wstring, std::wstring>(L"", L"");
         if (Runner::looksLikeCommand(string_to_wstring(GetBuffer()))) {
             if (ImGui::Selectable(("Run command: " + std::string(inputBuf)).c_str(), true)) if (ToLower(GetBuffer()) == "exit") app->done = true;
-                                                                                                         else Runner::RunAction(string_to_wstring(GetBuffer()));
+                                                                                                         else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else if (Runner::looksLikeUrl(string_to_wstring(GetBuffer()))) {
-            if (ImGui::Selectable(("Goto website: " + std::string(inputBuf)).c_str(), true)) Runner::RunAction(string_to_wstring(GetBuffer()));
+            if (ImGui::Selectable(("Goto website: " + std::string(inputBuf)).c_str(), true)) if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));;
         } else {
-            if (ImGui::Selectable(("Search: " + std::string(inputBuf)).c_str(), true)) Runner::RunAction(string_to_wstring(GetBuffer()));
+            if (ImGui::Selectable(("Search: " + std::string(inputBuf)).c_str(), true)) if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         }
     }
 
