@@ -8,6 +8,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-lib
 include_directories(
   external/imgui
   external/imgui/backends
+  external/json
 )
 
 file(GLOB IMGUI_SRC

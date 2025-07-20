@@ -10,10 +10,12 @@
 #include "../CacheFind/CacheFind.h"
 #include "../helpers/helper.h"
 #include "../Runner/Runner.h"
+#include "../MathParser/MathParser.h"
+#include "../Json/Json.h"
 
 #define INPUT_BUFFER_LENGTH 256
 
-class App; // 👈 Forward declare to avoid circular include
+class App;
 
 class InputBuf {
 private:
@@ -32,7 +34,9 @@ private:
     App* app;
 
 public:
-    ImVec4 inputBufColors = ImVec4(0.1f, 0.1f, 0.1f, 1);
+    ImVec4 WindowColors = ImVec4(0.1f, 0.1f, 0.1f, 1);
+    ImVec4 FrameColors = ImVec4(0.2f, 0.2f, 0.2f, 0.6f);
+    ImVec4 TextColors = ImVec4(1, 1, 1, 1);
     float padding = 10.0f;
 
     bool getRequestedClose() {

@@ -138,12 +138,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built on the foundation of the original [Windows Searcher](https://github.com/RoiRomem/Windows-Searcher) project
 - Powered by [Dear ImGui](https://github.com/ocornut/imgui) for the user interface
-- Uses Segoe UI font (For now)
+- Uses Segoe UI as a default font
 
 ## Changelog
 
+### v0.2b (WSI)
+- Bug fixes 🐛
+- Fullscreen block 🚀
+- In app advance calculator 🖩
+- JSON settings file ⚙️
+
 ### v0.1b (WSI)
-- Complete rewrite with Dear ImGui
+- Complete rewrite with Dear ImGui 
 - Improved performance and responsiveness  
 - Modern C++17 codebase
 - Enhanced caching system
@@ -153,13 +159,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Future
 
 ### Status
-- 70% done with the rewrite in **Dear ImGui**
-- Yet to write any of the new features
+- 80% done with the rewrite in **Dear ImGui**
 
 ### Future features
-
-- In app advance calculator
-- JSON settings file
 - In app settings
 - Custom keybinds
 - Custom commands

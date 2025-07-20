@@ -8,9 +8,11 @@
 #include <tchar.h>
 #include <memory>
 #include "App/App.h"
+#include "Json/Json.h"
 
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 150
+
 
 // data
 static ID3D11Device*            g_pd3dDevice = nullptr;

@@ -79,7 +79,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //style.FontSizeBase = 20.0f;
     //io.Fonts->AddFontDefault();
-    io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf");
+    auto config = LoadConfig();
+    io.Fonts->AddFontFromFileTTF(config.fontPath.c_str());
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
@@ -217,6 +218,44 @@ void CleanupRenderTarget()
     if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
 }
 
+bool IsAnotherAppInExclusiveFullscreen(HWND myHwnd) {
+    HWND foreground = GetForegroundWindow();
+    if (!foreground || foreground == myHwnd) return false;
+
+    // Check if it's a real visible window
+    if (!IsWindowVisible(foreground)) return false;
+
+    // Avoid taskbar, explorer etc
+    DWORD pid;
+    GetWindowThreadProcessId(foreground, &pid);
+    HANDLE hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+    wchar_t exeName[MAX_PATH] = {};
+    DWORD len = MAX_PATH;
+    if (hProc) {
+        QueryFullProcessImageNameW(hProc, 0, exeName, &len);
+        CloseHandle(hProc);
+        std::wstring path = exeName;
+        if (path.find(L"explorer.exe") != std::wstring::npos ||
+            path.find(L"dwm.exe") != std::wstring::npos)
+            return false;
+    }
+
+    RECT winRect;
+    GetWindowRect(foreground, &winRect);
+
+    HMONITOR hMon = MonitorFromWindow(foreground, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO monInfo = { sizeof(monInfo) };
+    GetMonitorInfo(hMon, &monInfo);
+
+    // If the window exactly covers the monitor, it’s likely fullscreen
+    if (EqualRect(&winRect, &monInfo.rcMonitor)) {
+        // Possible exclusive fullscreen
+        return true;
+    }
+
+    return false;
+}
+
 // Forward declare message handler from imgui_impl_win32.cpp
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -260,7 +299,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
 
         case WM_HOTKEY:
-            if (wParam == 0) return 0;
+            if (wParam == 0) break;
+            if (IsAnotherAppInExclusiveFullscreen(hWnd)) break;
             app->active = !app->active;
             app->inputBuf->ClearSearch();
             break;

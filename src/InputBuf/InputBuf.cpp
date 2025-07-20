@@ -15,6 +15,28 @@ std::string ToLower(const std::string& input) {
     return output;
 }
 
+std::string doubleToCleanString(double val) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(10) << val; // enough precision
+
+    std::string str = out.str();
+
+    // Remove trailing zeros
+    str.erase(str.find_last_not_of('0') + 1, std::string::npos);
+
+    // If last char is '.', remove it too (means integer)
+    if (!str.empty() && str.back() == '.') {
+        str.pop_back();
+    }
+
+    // If string is empty now (could happen if val was 0)
+    if (str.empty()) {
+        return "0";
+    }
+
+    return str;
+}
+
 void InputBuf::Draw()
 {
     auto* viewport = ImGui::GetMainViewport();
@@ -28,9 +50,11 @@ void InputBuf::Draw()
     // Push window padding style
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding, padding));
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, inputBufColors);
-    ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.2f, 0.2f, 0.2f, 0.6f));
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, 1));
+    auto colorMap = LoadConfig().colors;
+
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, colorMap["window"]);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, colorMap["frame"]);
+    ImGui::PushStyleColor(ImGuiCol_Text, colorMap["text"]);
 
     ImGui::Begin("WSI", nullptr,
         ImGuiWindowFlags_NoTitleBar |
@@ -44,9 +68,10 @@ void InputBuf::Draw()
         // here we will handle Activating ts
         if (currentFinding.first.empty() && currentFinding.second.empty()) {
             if (ToLower(GetBuffer()) == "exit") app->done = true;
+            else if (isMathValidExpression(GetBuffer())) CopyToClipboard(doubleToCleanString(evaluateExpression(GetBuffer())));
             else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else {
-            if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
+            if (!GetBuffer().empty()) Runner::RunAction(currentFinding.second);
         }
         inputBuf[0] = 0;
     }
@@ -122,7 +147,8 @@ void InputBuf::InputLogic() {
 
     if (i == 0 && !std::string(inputBuf).empty()) {
         currentFinding = std::pair<std::wstring, std::wstring>(L"", L"");
-        if (Runner::looksLikeCommand(string_to_wstring(GetBuffer()))) {
+        if (isMathValidExpression(GetBuffer())) ImGui::Selectable(doubleToCleanString(evaluateExpression(GetBuffer())).c_str());
+        else if (Runner::looksLikeCommand(string_to_wstring(GetBuffer()))) {
             if (ImGui::Selectable(("Run command: " + std::string(inputBuf)).c_str(), true)) if (ToLower(GetBuffer()) == "exit") app->done = true;
                                                                                                          else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else if (Runner::looksLikeUrl(string_to_wstring(GetBuffer()))) {
