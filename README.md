@@ -83,6 +83,7 @@ For developers who want to build from source:
 - **Web URLs**: Type URLs like `google.com` or `https://github.com`
 - **Web Search**: Type any text - if no local matches found, it becomes a web search
 - **Exit**: Type `exit` to close WSI completely
+- **Settings**: Type `settings` to access the WSI settings panel
 
 ### Keyboard Shortcuts
 | Key | Action |
@@ -142,6 +143,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.3b (WSI)
+- Bug fixes 🐛
+- Optimizations 🤓
+- In app settings ⚙️
+
 ### v0.2b (WSI)
 - Bug fixes 🐛
 - Fullscreen block 🚀
@@ -159,10 +165,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Future
 
 ### Status
-- 80% done with the rewrite in **Dear ImGui**
+- 100% done with the rewrite in **Dear ImGui** 🎉
+- Working on new Features (check Future features) 🤩
 
 ### Future features
-- In app settings
 - Custom keybinds
 - Custom commands
 - Custom directories

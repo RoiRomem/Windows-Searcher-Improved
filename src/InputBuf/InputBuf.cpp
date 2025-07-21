@@ -50,9 +50,7 @@ void InputBuf::Draw()
     // Push window padding style
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(padding, padding));
 
-    auto colorMap = LoadConfig().colors;
-
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, colorMap["window"]);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, colorMap["background"]);
     ImGui::PushStyleColor(ImGuiCol_FrameBg, colorMap["frame"]);
     ImGui::PushStyleColor(ImGuiCol_Text, colorMap["text"]);
 
@@ -63,11 +61,24 @@ void InputBuf::Draw()
     );
 
     ImGui::PushItemWidth(size.x - 2 * padding);
-    ImGui::SetKeyboardFocusHere();
+
+    if (needsInitialFocus) {
+        ImGui::SetKeyboardFocusHere();
+        ImGui::SetWindowFocus();
+        needsInitialFocus = false;
+    }
+
+    if (forceClearOnNextFrame) {
+        memset(inputBuf, 0, sizeof(inputBuf));
+        oldInputBuf.clear();
+        forceClearOnNextFrame = false;
+    }
+
     if (ImGui::InputText("##input", inputBuf, sizeof(inputBuf), ImGuiInputTextFlags_EnterReturnsTrue)) {
         // here we will handle Activating ts
         if (currentFinding.first.empty() && currentFinding.second.empty()) {
             if (ToLower(GetBuffer()) == "exit") app->done = true;
+            else if (ToLower(GetBuffer()) == "settings") shouldSettingsBeActive = true;
             else if (isMathValidExpression(GetBuffer())) CopyToClipboard(doubleToCleanString(evaluateExpression(GetBuffer())));
             else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else {
@@ -75,7 +86,6 @@ void InputBuf::Draw()
         }
         inputBuf[0] = 0;
     }
-
     InputLogic();
 
 
@@ -92,6 +102,10 @@ void InputBuf::Draw()
 
 std::wstring GetExtension(std::wstring str) {
     return str.substr(str.length() >= 4 ? str.length() - 4 : 0);
+}
+
+void InputBuf::ForceFocus() {
+    needsInitialFocus = true;
 }
 
 /*
@@ -159,4 +173,8 @@ void InputBuf::InputLogic() {
     }
 
     ImGui::EndChild();
+}
+
+void InputBuf::UpdateConfig(std::unordered_map<std::string, ImVec4> config) {
+    colorMap = config;
 }

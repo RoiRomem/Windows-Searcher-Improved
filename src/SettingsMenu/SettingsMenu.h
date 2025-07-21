@@ -1,16 +1,19 @@
-//
-// Created by owner on 7/21/2025.
-//
+#pragma once
 
-#ifndef SETTINGSMENU_H
-#define SETTINGSMENU_H
-
-
+#include <string>
+#include "imgui.h"
+#include "../Json/json.h"
 
 class SettingsMenu {
+private:
+    int width, height;
+    ImVec4 frameColor, textColor, backgroundColor;
+    char fontPath[256];
+    void SaveSettings();
 
+public:
+    bool shouldClose = false;
+    bool shouldUpdate = false;
+    SettingsMenu(int width, int height);
+    void Draw();
 };
-
-
-
-#endif //SETTINGSMENU_H

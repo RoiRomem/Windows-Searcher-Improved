@@ -32,12 +32,13 @@ private:
     bool requestClose = false;
     long long click_index = 0;
     App* app;
+    std::unordered_map<std::string, ImVec4> colorMap;
+    bool needsInitialFocus = true;
+    bool forceClearOnNextFrame = false;
 
 public:
-    ImVec4 WindowColors = ImVec4(0.1f, 0.1f, 0.1f, 1);
-    ImVec4 FrameColors = ImVec4(0.2f, 0.2f, 0.2f, 0.6f);
-    ImVec4 TextColors = ImVec4(1, 1, 1, 1);
     float padding = 10.0f;
+    bool shouldSettingsBeActive = false;
 
     bool getRequestedClose() {
         if (requestClose) {
@@ -57,6 +58,7 @@ public:
         cacheFind = std::make_unique<CacheFind>(searcher->InstalledApps);
         windowSize[0] = width;
         windowSize[1] = height;
+        colorMap = LoadConfig().colors;
     }
 
     std::string GetBuffer();
@@ -64,8 +66,10 @@ public:
     void IncreaseIndex() { ++currentIndex; }
     void DecreaseIndex() { --currentIndex; }
     void ClearSearch() {
-        inputBuf[0] = '\0';
+        forceClearOnNextFrame = true;
     }
+    void ForceFocus();
+    void UpdateConfig(std::unordered_map<std::string, ImVec4> config);
 };
 
 #endif //INPUTBUF_H

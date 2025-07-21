@@ -43,7 +43,7 @@ AppConfig LoadConfig() {
     } else {
         // Use defaults
         config.fontPath = FONT_PATH_DEF;
-        config.colors["window"] = WINDOW_COLOR_DEF;
+        config.colors["background"] = WINDOW_COLOR_DEF;
         config.colors["frame"] = FRAME_COLOR_DEF;
         config.colors["text"] = TEXT_COLOR_DEF;
 
@@ -57,4 +57,23 @@ AppConfig LoadConfig() {
     }
 
     return config;
+}
+
+void SaveConfig(const AppConfig& config) {
+    json j;
+
+    // Save font path
+    j["font_path"] = config.fontPath;
+
+    // Save color map
+    j["colors"] = json::object();
+    for (const auto& [key, color] : config.colors) {
+        j["colors"][key] = color;
+    }
+
+    // Write to file
+    std::ofstream outFile(FILENAME);
+    if (outFile) {
+        outFile << j.dump(4);
+    }
 }

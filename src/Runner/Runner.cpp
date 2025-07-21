@@ -11,7 +11,7 @@ bool Runner::looksLikeCommand(std::wstring input) {
 
     static const std::unordered_set<std::wstring> knownCommands = {
         L"exit",L"start", L"taskkill", L"tasklist", L"ping", L"ipconfig", L"netstat",
-        L"shutdown", L"cmd", L"restart"
+        L"shutdown", L"cmd", L"restart", L"settings"
     };
 
     std::wistringstream iss(input);
@@ -72,7 +72,7 @@ void Runner::RunAction(std::wstring action) {
     } else if (looksLikeCommand(action)) {
         if (wstrlwr(action) == L"shutdown") RunCommand(L"shutdown /s /t 1", true);
         else if (wstrlwr(action) == L"restart") RunCommand(L"restart /s /t 1", true);
-        else if (wstrlwr(action) == L"cmd") RunCommand(L"cmd", true);
+        else if (wstrlwr(action) == L"cmd") RunCommand(L"start wt cmd", true);
         else RunCommand(action);
     } else if (looksLikeUrl(action)) {
         OpenInBrowser(action);

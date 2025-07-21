@@ -8,11 +8,11 @@
 
 #include "main.h"
 
+#include <dwmapi.h>
 #include <iostream>
-
 #include "InputBuf/InputBuf.h"
 
-const auto app = std::make_unique<App>(WINDOW_WIDTH, WINDOW_HEIGHT);
+std::unique_ptr<App>* appPtr = nullptr;
 
 // Main code
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -23,12 +23,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     int scaledWidth = static_cast<int>(WINDOW_WIDTH * MainScale);
     int scaledHeight = static_cast<int>(WINDOW_HEIGHT * MainScale);
+    int scaledSettingsWidth = static_cast<int>(SETTINGS_WIDTH * MainScale);
+    int scaledSettingsHeight = static_cast<int>(SETTINGS_HEIGHT * MainScale);
 
     // Create application window
     WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"WSI", nullptr };
     ::RegisterClassExW(&wc);
     HWND hwnd = ::CreateWindowExW(
-        WS_EX_TOOLWINDOW | WS_EX_TOPMOST,
+        WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT,
         wc.lpszClassName,
         L"",
         WS_POPUP,
@@ -37,6 +39,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         scaledWidth, scaledHeight,
         nullptr, nullptr, wc.hInstance, nullptr
     );
+
+    MARGINS margins = { -1 };
+    DwmExtendFrameIntoClientArea(hwnd, &margins);
+
+    auto app = std::make_unique<App>(scaledWidth, scaledHeight, scaledSettingsWidth, scaledSettingsHeight);
+    appPtr = &app;
 
     RegisterHotKey(hwnd, 1, MOD_CONTROL, VK_SPACE);
 
@@ -79,15 +87,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
     //style.FontSizeBase = 20.0f;
     //io.Fonts->AddFontDefault();
+
     auto config = LoadConfig();
-    io.Fonts->AddFontFromFileTTF(config.fontPath.c_str());
+    auto currentFont = io.Fonts->AddFontFromFileTTF(config.fontPath.c_str());
+
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
     //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
     //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
     //IM_ASSERT(font != nullptr);
 
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
 
 
 
@@ -126,6 +136,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
             g_ResizeWidth = g_ResizeHeight = 0;
             CreateRenderTarget();
+        }
+
+        if (app->isSettingsActive) {
+            SetWindowPos(hwnd, nullptr, 0, 0, (GetSystemMetrics(SM_CXSCREEN)), (GetSystemMetrics(SM_CYSCREEN)), SWP_NOZORDER);
+            auto region = app->GetCombinedWindowRegion();
+            SetWindowRgn(hwnd, region, TRUE);
+            DeleteObject(region);
+        } else {
+            SetWindowPos(hwnd, nullptr, (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2, (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2, scaledWidth, scaledHeight, SWP_NOZORDER);
+            auto region = app->GetCombinedWindowRegion();
+            SetWindowRgn(hwnd, region, TRUE);
+            DeleteObject(region);
+        }
+
+        if (app->settingsMenu->shouldUpdate) {
+            config = LoadConfig();
+            app->inputBuf->UpdateConfig(config.colors);
+            io.Fonts->RemoveFont(currentFont);
+            currentFont = io.Fonts->AddFontFromFileTTF(config.fontPath.c_str());
+            app->settingsMenu->shouldUpdate = false;
         }
 
         const float clear_color_with_alpha[4] = {
@@ -286,23 +316,24 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         return 0;
 
         case WM_KILLFOCUS:
-            app->active = false;
+            (*appPtr)->active = false;
             break;
 
     case WM_KEYDOWN:
-        if (wParam == VK_DOWN) app->inputBuf->IncreaseIndex();
-        else if (wParam == VK_UP) app->inputBuf->DecreaseIndex();
+        if (wParam == VK_DOWN) (*appPtr)->inputBuf->IncreaseIndex();
+        else if (wParam == VK_UP) (*appPtr)->inputBuf->DecreaseIndex();
         else if (wParam == VK_ESCAPE) {
-            app->active = false;
-            app->inputBuf->ClearSearch();
-        };
+            (*appPtr)->active = false;
+            (*appPtr)->inputBuf->ClearSearch();
+        }
         break;
 
         case WM_HOTKEY:
             if (wParam == 0) break;
             if (IsAnotherAppInExclusiveFullscreen(hWnd)) break;
-            app->active = !app->active;
-            app->inputBuf->ClearSearch();
+            (*appPtr)->inputBuf->ClearSearch();
+            (*appPtr)->active = !(*appPtr)->active;
+            if ((*appPtr)->active) (*appPtr)->inputBuf->ForceFocus();
             break;
     default: ;
     }

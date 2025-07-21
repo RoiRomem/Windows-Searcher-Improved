@@ -9,9 +9,16 @@
 #include <memory>
 #include "App/App.h"
 #include "Json/Json.h"
+#include "SettingsMenu/SettingsMenu.h"
 
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 150
+
+#define EXTENDED_WIDTH 850
+#define EXTENDED_HEIGHT 300
+
+#define SETTINGS_WIDTH 400
+#define SETTINGS_HEIGHT 192
 
 
 // data
