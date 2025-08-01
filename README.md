@@ -1,4 +1,4 @@
-# WSI - Windows Search Interface
+# WSI - Windows Search Improved
 
 WSI is a fast, lightweight application launcher for Windows that provides instant access to your installed applications through a sleek, overlay-style interface. It's an improved version of the original [Windows Searcher](https://github.com/RoiRomem/Windows-Searcher) project, built with modern C++ and Dear ImGui for a smooth user experience.
 
@@ -96,10 +96,12 @@ For developers who want to build from source:
 ## Technical Architecture
 
 ### Core Components
-- **App.cpp**: Main application controller and rendering loop
+- **App**: Main application controller and rendering loop
 - **InputBuf**: Input handling and UI rendering with Dear ImGui
 - **CacheFind**: Intelligent search and caching system
 - **Searcher**: File system scanning and application discovery
+- **SettingsMenu**: Settings menu GUI
+- **Json**: Write or load config from storage
 
 ### Key Technologies
 - **Dear ImGui**: Immediate mode GUI framework
