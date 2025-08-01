@@ -21,9 +21,8 @@ std::unique_ptr<App> *appPtr = nullptr;
 //int main()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    std::cout << "Hello World!" << std::endl;
     // Make process DPI aware and obtain main monitor scale
-     ImGui_ImplWin32_EnableDpiAwareness();
+    ImGui_ImplWin32_EnableDpiAwareness();
     float MainScale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY));
 
     int scaledWidth = static_cast<int>(WINDOW_WIDTH * MainScale);
