@@ -12,6 +12,10 @@ App::App(const int width, const int height, const int setWidth, const int setHei
 
 void App::Run() {
   if (inputBuf->getRequestedClose()) done = true;
+    if (settingsMenu->shouldUpdateCommands) {
+        inputBuf->UpdateCacheCommands();
+        settingsMenu->shouldUpdateCommands = false;
+    }
   inputBuf->Draw();
   if (inputBuf->shouldSettingsBeActive) {
       isSettingsActive = true;

@@ -10,7 +10,7 @@ private:
     std::wstring currentInput;
 
     // Full dataset in wstring
-    const std::unordered_map<std::wstring, std::wstring>& allItems;
+    std::unordered_map<std::wstring, std::wstring> allItems;
 
     std::unordered_map<std::wstring, std::wstring> filterItems(
         const std::unordered_map<std::wstring, std::wstring>& sourceMap,
@@ -25,6 +25,11 @@ public:
     std::vector<std::pair<std::wstring, std::wstring>> GetClosestMatches(const std::wstring& input, size_t maxResults);
     std::vector<std::pair<std::wstring, std::wstring>> GetClosestMatchesSimple(const std::wstring& input, size_t maxResults);
     explicit CacheFind(const std::unordered_map<std::wstring, std::wstring>& items);
+    void UpdateCommands(const std::unordered_map<std::wstring, std::wstring>& commands);
+
+    inline std::unordered_map<std::wstring, std::wstring> GetAllItems() const {
+        return allItems;
+    }
 
     // Input here is normal string (utf8), converted internally
     void UpdateInput(const std::string& newInput);

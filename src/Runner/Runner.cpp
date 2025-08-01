@@ -1,5 +1,7 @@
 #include "Runner.h"
 
+#include <iostream>
+
 bool looksLikeFile(std::wstring input) {
     if (input.empty()) return false;
 
@@ -9,16 +11,11 @@ bool looksLikeFile(std::wstring input) {
 bool Runner::looksLikeCommand(std::wstring input) {
     if (input.empty()) return false;
 
-    static const std::unordered_set<std::wstring> knownCommands = {
-        L"exit",L"start", L"taskkill", L"tasklist", L"ping", L"ipconfig", L"netstat",
-        L"shutdown", L"cmd", L"restart", L"settings"
-    };
-
     std::wistringstream iss(input);
     std::wstring firstWord;
     iss >> firstWord;
 
-    return knownCommands.find(firstWord) != knownCommands.end();
+    return knownCommands.contains(firstWord);
 }
 
 bool Runner::looksLikeUrl(std::wstring input) {
@@ -44,12 +41,14 @@ void OpenWithShell(const std::wstring& target, bool asAdmin = false) {
 
 // Runs a command in CMD
 void RunCommand(const std::wstring& cmd, bool asAdmin = false) {
-    std::wstring fullCmd = L"cmd.exe /C" + cmd;
+    const auto command = Runner::customCommands.contains(cmd) ? Runner::customCommands[cmd] : cmd;
+
+    std::wstring fullCmd = L"cmd.exe /C" + command;
 
     SHELLEXECUTEINFOW sei = { sizeof(sei) };
     sei.lpVerb = asAdmin ? L"runas" : L"open";
     sei.lpFile = L"cmd.exe";
-    sei.lpParameters = (L"/C " + cmd).c_str();
+    sei.lpParameters = (L"/C " + command).c_str();
     sei.nShow = SW_SHOWNORMAL;
 
     ShellExecuteExW(&sei);

@@ -143,6 +143,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Changelog
 
+### v0.5b (WSI) - Stable release 🎉
+- Bug fixes 🐛
+- Optimizations 🤓
+- Better search GUI 😍
+- Custom commands 🤖
+
+### v0.4b (WSI)
+- Custom keybindings ️⌨️
+
 ### v0.3b (WSI)
 - Bug fixes 🐛
 - Optimizations 🤓
@@ -155,7 +164,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - JSON settings file ⚙️
 
 ### v0.1b (WSI)
-- Complete rewrite with Dear ImGui 
 - Improved performance and responsiveness  
 - Modern C++17 codebase
 - Enhanced caching system
@@ -169,8 +177,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Working on new Features (check Future features) 🤩
 
 ### Future features
-- Custom keybinds
-- Custom commands
 - Custom directories
 - Lua integration for mods?
 - Community suggestions

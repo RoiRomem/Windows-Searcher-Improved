@@ -1,0 +1,1 @@
+cmake --build D:\dev\WSI\cmake-build-debug --target WSI -j 14

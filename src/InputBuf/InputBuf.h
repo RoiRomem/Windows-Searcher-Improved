@@ -70,6 +70,9 @@ public:
     }
     void ForceFocus();
     void UpdateConfig(std::unordered_map<std::string, ImVec4> config);
+    inline void UpdateCacheCommands() const {
+        cacheFind->UpdateCommands(Runner::customCommands);
+    }
 };
 
 #endif //INPUTBUF_H

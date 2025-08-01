@@ -1,4 +1,7 @@
 #include "InputBuf.h"
+
+#include <iostream>
+
 #include "../App/App.h"
 
 std::string InputBuf::GetBuffer()
@@ -77,12 +80,13 @@ void InputBuf::Draw()
     if (ImGui::InputText("##input", inputBuf, sizeof(inputBuf), ImGuiInputTextFlags_EnterReturnsTrue)) {
         // here we will handle Activating ts
         if (currentFinding.first.empty() && currentFinding.second.empty()) {
-            if (ToLower(GetBuffer()) == "exit") app->done = true;
-            else if (ToLower(GetBuffer()) == "settings") shouldSettingsBeActive = true;
-            else if (isMathValidExpression(GetBuffer())) CopyToClipboard(doubleToCleanString(evaluateExpression(GetBuffer())));
+            if (isMathValidExpression(GetBuffer())) CopyToClipboard(doubleToCleanString(evaluateExpression(GetBuffer())));
             else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         } else {
-            if (!GetBuffer().empty()) Runner::RunAction(currentFinding.second);
+            if (!GetBuffer().empty() && !currentFinding.second.empty()) Runner::RunAction(currentFinding.second);
+            if (currentFinding.first == L"exit") app->done = true;
+            else if (currentFinding.first == L"settings") shouldSettingsBeActive = true;
+            else Runner::RunAction(currentFinding.first);
         }
         inputBuf[0] = 0;
     }
@@ -126,14 +130,21 @@ std::vector<std::pair<std::wstring, std::wstring>> InputBuf::SortFindings(std::v
         }
     }
 
+    for (const auto& remaining : findings) {
+        returnVector.push_back(remaining);
+    }
+
     return returnVector;
 }
+
+bool printed = false;
 
 void InputBuf::InputLogic() {
     // checks if the buffer had changed
     if (strcmp(inputBuf, oldInputBuf.c_str())) {
         cacheFind->UpdateInput(inputBuf);
         currentIndex = 0;
+        const auto cache = cacheFind->GetAllItems();
     }
 
     const auto findings = cacheFind->GetClosestMatchesSimple(string_to_wstring(GetBuffer()), 4);
@@ -144,11 +155,22 @@ void InputBuf::InputLogic() {
 
     int i = 0;
     for (const auto& match : findings_sorted) {
-        const std::string text = wstring_to_string(match.first);
-        const bool is_selected = (i == currentIndex);
-        if (ImGui::Selectable(text.c_str(), is_selected)) {
-            if (currentIndex == i) Runner::RunAction(match.second);
-            else currentIndex = i;
+        bool is_selected = (i == currentIndex);
+
+        if (match.second.empty()) {
+            const std::string text = "Run Command: " + wstring_to_string(match.first);
+            if (ImGui::Selectable(text.c_str(), is_selected)) {
+                if (currentIndex == i) Runner::RunAction(match.second);
+                else currentIndex = i;
+            }
+        } else {
+            const std::string text = wstring_to_string(match.first);
+            if (!match.second.empty()) {
+                if (ImGui::Selectable(text.c_str(), is_selected)) {
+                    if (currentIndex == i) Runner::RunAction(match.second);
+                    else currentIndex = i;
+                }
+            }
         }
 
         // Set current finding for the selected item
@@ -162,16 +184,12 @@ void InputBuf::InputLogic() {
     if (i == 0 && !std::string(inputBuf).empty()) {
         currentFinding = std::pair<std::wstring, std::wstring>(L"", L"");
         if (isMathValidExpression(GetBuffer())) ImGui::Selectable(doubleToCleanString(evaluateExpression(GetBuffer())).c_str());
-        else if (Runner::looksLikeCommand(string_to_wstring(GetBuffer()))) {
-            if (ImGui::Selectable(("Run command: " + std::string(inputBuf)).c_str(), true)) if (ToLower(GetBuffer()) == "exit") app->done = true;
-                                                                                                         else if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
-        } else if (Runner::looksLikeUrl(string_to_wstring(GetBuffer()))) {
+        else if (Runner::looksLikeUrl(string_to_wstring(GetBuffer()))) {
             if (ImGui::Selectable(("Goto website: " + std::string(inputBuf)).c_str(), true)) if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));;
         } else {
             if (ImGui::Selectable(("Search: " + std::string(inputBuf)).c_str(), true)) if (!GetBuffer().empty()) Runner::RunAction(string_to_wstring(GetBuffer()));
         }
     }
-
     ImGui::EndChild();
 }
 

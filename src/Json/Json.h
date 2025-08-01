@@ -17,6 +17,9 @@ namespace fs = std::filesystem;
 struct AppConfig {
     std::string fontPath;
     std::unordered_map<std::string, ImVec4> colors;
+    int keybindVK;
+    int keybindMod;
+    std::vector<std::pair<std::wstring, std::wstring>> customCommands;
 };
 
 AppConfig LoadConfig();

@@ -2,7 +2,11 @@
 #include <locale>
 #include <codecvt>
 #include <algorithm>
+#include <iostream>
 #include <queue>
+#include <ranges>
+
+#include "../Runner/Runner.h"
 
 std::wstring ToLower(const std::wstring& input) {
     std::wstring output;
@@ -151,16 +155,29 @@ static std::wstring StringToWString(const std::string& str) {
 CacheFind::CacheFind(const std::unordered_map<std::wstring, std::wstring>& items)
     : allItems(items)
 {
+    for (const std::wstring& cmd : Runner::knownCommands) {
+        allItems.insert({cmd, L""});
+    }
+
     cacheStack.reserve(100);
     CurrentMatches.clear();
 }
+
+void CacheFind::UpdateCommands(const std::unordered_map<std::wstring, std::wstring>& commands) {
+    for (const auto &key: commands | std::views::keys) {
+        if (!allItems.contains(key)) {
+            allItems.emplace(key, L"");
+        }
+    }
+}
+
 
 std::unordered_map<std::wstring, std::wstring> CacheFind::filterItems(
     const std::unordered_map<std::wstring, std::wstring>& sourceMap,
     const std::wstring& prefix)
 {
     std::unordered_map<std::wstring, std::wstring> filtered;
-    std::wstring clean_prefix = RemoveWhitespace(ToLower(prefix));
+    const std::wstring clean_prefix = RemoveWhitespace(ToLower(prefix));
 
     for (const auto& [key, val] : sourceMap) {
         if (RemoveWhitespace(ToLower(key)).compare(0, clean_prefix.size(), clean_prefix) == 0)

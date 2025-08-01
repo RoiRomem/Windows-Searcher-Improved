@@ -1,10 +1,13 @@
-// Dear ImGui: standalone example application for DirectX 11
+/* ===========================================================================
+__      __  ____    ______
+/\ \  __/\ \/\  _`\ /\__  _\
+\ \ \/\ \ \ \ \,\L\_\/_/\ \/
+ \ \ \ \ \ \ \/_\__ \  \ \ \
+  \ \ \_/ \_\ \/\ \L\ \ \_\ \__
+   \ `\___x___/\ `\____\/\_____\
+    '\/__//__/  \/_____/\/_____/
 
-// Learn about Dear ImGui:
-// - FAQ                  https://dearimgui.com/faq
-// - Getting Started      https://dearimgui.com/getting-started
-// - Documentation        https://dearimgui.com/docs (same as your local docs/ folder).
-// - Introduction, links and more at the top of imgui.cpp
+=========================================================================== */
 
 #include "main.h"
 
@@ -12,14 +15,16 @@
 #include <iostream>
 #include "InputBuf/InputBuf.h"
 
-std::unique_ptr<App>* appPtr = nullptr;
+std::unique_ptr<App> *appPtr = nullptr;
 
 // Main code
+//int main()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    std::cout << "Hello World!" << std::endl;
     // Make process DPI aware and obtain main monitor scale
-    ImGui_ImplWin32_EnableDpiAwareness();
-    float MainScale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+     ImGui_ImplWin32_EnableDpiAwareness();
+    float MainScale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{0, 0}, MONITOR_DEFAULTTOPRIMARY));
 
     int scaledWidth = static_cast<int>(WINDOW_WIDTH * MainScale);
     int scaledHeight = static_cast<int>(WINDOW_HEIGHT * MainScale);
@@ -27,7 +32,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     int scaledSettingsHeight = static_cast<int>(SETTINGS_HEIGHT * MainScale);
 
     // Create application window
-    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"WSI", nullptr };
+    WNDCLASSEXW wc = {sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"WSI", nullptr};
     ::RegisterClassExW(&wc);
     HWND hwnd = ::CreateWindowExW(
         WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT,
@@ -37,16 +42,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2,
         (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2,
         scaledWidth, scaledHeight,
-        nullptr, nullptr, wc.hInstance, nullptr
-    );
+        nullptr, nullptr, wc.hInstance, nullptr);
 
-    MARGINS margins = { -1 };
+    MARGINS margins = {-1};
     DwmExtendFrameIntoClientArea(hwnd, &margins);
 
     auto app = std::make_unique<App>(scaledWidth, scaledHeight, scaledSettingsWidth, scaledSettingsHeight);
     appPtr = &app;
 
-    RegisterHotKey(hwnd, 1, MOD_CONTROL, VK_SPACE);
+    auto config = LoadConfig();
+
+    RegisterHotKey(hwnd, 1, config.keybindMod, config.keybindVK);
 
     // Initialize Direct3D
     if (!CreateDeviceD3D(hwnd))
@@ -63,16 +69,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
+    // ImGui::StyleColorsLight();
 
     // Setup scaling
-    ImGuiStyle& style = ImGui::GetStyle();
-    style.ScaleAllSizes(MainScale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
-    style.FontScaleDpi = MainScale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.ScaleAllSizes(MainScale); // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = MainScale; // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
 
     // Setup Platform/Renderer backends
     ImGui_ImplWin32_Init(hwnd);
@@ -85,21 +92,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //style.FontSizeBase = 20.0f;
-    //io.Fonts->AddFontDefault();
+    // style.FontSizeBase = 20.0f;
+    // io.Fonts->AddFontDefault();
 
-    auto config = LoadConfig();
     auto currentFont = io.Fonts->AddFontFromFileTTF(config.fontPath.c_str());
 
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
-    //IM_ASSERT(font != nullptr);
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf");
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf");
+    // io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf");
+    // ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf");
+    // IM_ASSERT(font != nullptr);
 
     ImVec4 clear_color = ImVec4(0.0f, 0.0f, 0.0f, 0.0f);
-
-
 
     // Main loop
     while (!app->done)
@@ -115,8 +119,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         if (app->done)
             break;
 
-        if (app->inputBuf->getRequestedClose()) app->active = false;
-        if (!app->active) {
+        if (app->inputBuf->getRequestedClose())
+            app->active = false;
+        if (!app->active)
+        {
             ShowWindow(hwnd, SW_HIDE);
             Sleep(10);
             continue;
@@ -138,19 +144,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             CreateRenderTarget();
         }
 
-        if (app->isSettingsActive) {
+        if (app->isSettingsActive)
+        {
             SetWindowPos(hwnd, nullptr, 0, 0, (GetSystemMetrics(SM_CXSCREEN)), (GetSystemMetrics(SM_CYSCREEN)), SWP_NOZORDER);
             auto region = app->GetCombinedWindowRegion();
             SetWindowRgn(hwnd, region, TRUE);
             DeleteObject(region);
-        } else {
+        }
+        else
+        {
             SetWindowPos(hwnd, nullptr, (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2, (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2, scaledWidth, scaledHeight, SWP_NOZORDER);
             auto region = app->GetCombinedWindowRegion();
             SetWindowRgn(hwnd, region, TRUE);
             DeleteObject(region);
         }
 
-        if (app->settingsMenu->shouldUpdate) {
+        if (app->settingsMenu->shouldUpdate)
+        {
             config = LoadConfig();
             app->inputBuf->UpdateConfig(config.colors);
             io.Fonts->RemoveFont(currentFont);
@@ -162,8 +172,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             clear_color.x * clear_color.w,
             clear_color.y * clear_color.w,
             clear_color.z * clear_color.w,
-            clear_color.w
-        };
+            clear_color.w};
 
         g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
         g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
@@ -177,6 +186,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         // Render ImGui
         ImGui::Render();
         ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        if (app->settingsMenu->shouldUpdate)
+        {
+            config = LoadConfig();
+            UnregisterHotKey(hwnd, 1);
+            RegisterHotKey(hwnd, 1, config.keybindMod, config.keybindVK);
+        }
 
         g_pSwapChain->Present(1, 0);
     }
@@ -214,9 +230,12 @@ bool CreateDeviceD3D(HWND hWnd)
     sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
     UINT createDeviceFlags = 0;
-    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    // createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
     D3D_FEATURE_LEVEL featureLevel;
-    constexpr D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    constexpr D3D_FEATURE_LEVEL featureLevelArray[2] = {
+        D3D_FEATURE_LEVEL_11_0,
+        D3D_FEATURE_LEVEL_10_0,
+    };
     HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
     if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
         res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
@@ -230,14 +249,26 @@ bool CreateDeviceD3D(HWND hWnd)
 void CleanupDeviceD3D()
 {
     CleanupRenderTarget();
-    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
-    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
-    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
+    if (g_pSwapChain)
+    {
+        g_pSwapChain->Release();
+        g_pSwapChain = nullptr;
+    }
+    if (g_pd3dDeviceContext)
+    {
+        g_pd3dDeviceContext->Release();
+        g_pd3dDeviceContext = nullptr;
+    }
+    if (g_pd3dDevice)
+    {
+        g_pd3dDevice->Release();
+        g_pd3dDevice = nullptr;
+    }
 }
 
 void CreateRenderTarget()
 {
-    ID3D11Texture2D* pBackBuffer;
+    ID3D11Texture2D *pBackBuffer;
     g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
     g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
     pBackBuffer->Release();
@@ -245,15 +276,22 @@ void CreateRenderTarget()
 
 void CleanupRenderTarget()
 {
-    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
+    if (g_mainRenderTargetView)
+    {
+        g_mainRenderTargetView->Release();
+        g_mainRenderTargetView = nullptr;
+    }
 }
 
-bool IsAnotherAppInExclusiveFullscreen(HWND myHwnd) {
+bool IsAnotherAppInExclusiveFullscreen(HWND myHwnd)
+{
     HWND foreground = GetForegroundWindow();
-    if (!foreground || foreground == myHwnd) return false;
+    if (!foreground || foreground == myHwnd)
+        return false;
 
     // Check if it's a real visible window
-    if (!IsWindowVisible(foreground)) return false;
+    if (!IsWindowVisible(foreground))
+        return false;
 
     // Avoid taskbar, explorer etc
     DWORD pid;
@@ -261,7 +299,8 @@ bool IsAnotherAppInExclusiveFullscreen(HWND myHwnd) {
     HANDLE hProc = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
     wchar_t exeName[MAX_PATH] = {};
     DWORD len = MAX_PATH;
-    if (hProc) {
+    if (hProc)
+    {
         QueryFullProcessImageNameW(hProc, 0, exeName, &len);
         CloseHandle(hProc);
         std::wstring path = exeName;
@@ -274,11 +313,12 @@ bool IsAnotherAppInExclusiveFullscreen(HWND myHwnd) {
     GetWindowRect(foreground, &winRect);
 
     HMONITOR hMon = MonitorFromWindow(foreground, MONITOR_DEFAULTTONEAREST);
-    MONITORINFO monInfo = { sizeof(monInfo) };
+    MONITORINFO monInfo = {sizeof(monInfo)};
     GetMonitorInfo(hMon, &monInfo);
 
     // If the window exactly covers the monitor, it’s likely fullscreen
-    if (EqualRect(&winRect, &monInfo.rcMonitor)) {
+    if (EqualRect(&winRect, &monInfo.rcMonitor))
+    {
         // Possible exclusive fullscreen
         return true;
     }
@@ -315,27 +355,44 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         ::PostQuitMessage(0);
         return 0;
 
-        case WM_KILLFOCUS:
-            (*appPtr)->active = false;
-            break;
+    case WM_KILLFOCUS:
+        (*appPtr)->active = false;
+        break;
 
     case WM_KEYDOWN:
-        if (wParam == VK_DOWN) (*appPtr)->inputBuf->IncreaseIndex();
-        else if (wParam == VK_UP) (*appPtr)->inputBuf->DecreaseIndex();
-        else if (wParam == VK_ESCAPE) {
+        if (wParam == VK_DOWN)
+            (*appPtr)->inputBuf->IncreaseIndex();
+        else if (wParam == VK_UP)
+            (*appPtr)->inputBuf->DecreaseIndex();
+        else if (wParam == VK_ESCAPE)
+        {
             (*appPtr)->active = false;
             (*appPtr)->inputBuf->ClearSearch();
         }
         break;
 
-        case WM_HOTKEY:
-            if (wParam == 0) break;
-            if (IsAnotherAppInExclusiveFullscreen(hWnd)) break;
-            (*appPtr)->inputBuf->ClearSearch();
-            (*appPtr)->active = !(*appPtr)->active;
-            if ((*appPtr)->active) (*appPtr)->inputBuf->ForceFocus();
+    case WM_HOTKEY:
+        if (wParam == 0)
             break;
-    default: ;
+        if (IsAnotherAppInExclusiveFullscreen(hWnd))
+            break;
+        (*appPtr)->inputBuf->ClearSearch();
+        (*appPtr)->active = !(*appPtr)->active;
+        if ((*appPtr)->active)
+        {
+            (*appPtr)->inputBuf->ForceFocus();
+            
+            DWORD fgThread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+            DWORD thisThread = GetCurrentThreadId();
+            AttachThreadInput(fgThread, thisThread, TRUE);
+
+            SetForegroundWindow(hWnd);
+            SetFocus(hWnd);
+
+            AttachThreadInput(fgThread, thisThread, FALSE);
+        }
+        break;
+    default:;
     }
     return ::DefWindowProcW(hWnd, msg, wParam, lParam);
 }
