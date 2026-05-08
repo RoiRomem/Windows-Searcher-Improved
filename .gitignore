@@ -1,5 +1,7 @@
 # Ignore CLion / JetBrains IDE config
 .idea/
+.vscode/
+.vs/
 
 # Ignore CMake build folder
 cmake-build-debug/
