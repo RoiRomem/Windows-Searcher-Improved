@@ -15,6 +15,7 @@
 #include <filesystem>
 
 #include "../helpers/AppLogs.h"
+#include "../helpers/helper.h"
 
 using namespace winrt;
 using namespace Windows::Management::Deployment;
@@ -73,25 +74,23 @@ std::vector<std::pair<std::wstring, std::wstring>> FindMCStoreApps()
 
 bool IsLinkToExe(const std::wstring &lnkPath)
 {
+    HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    bool initialized = SUCCEEDED(hr);
+
     IShellLinkW *psl = nullptr;
     bool isExe = false;
 
-    HRESULT hr = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&psl);
+    hr = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID *)&psl);
+    
     if (SUCCEEDED(hr))
     {
         IPersistFile *ppf = nullptr;
-        hr = psl->QueryInterface(IID_IPersistFile, (LPVOID *)&ppf);
-
-        if (SUCCEEDED(hr))
+        if (SUCCEEDED(psl->QueryInterface(IID_IPersistFile, (LPVOID *)&ppf)))
         {
-            hr = ppf->Load(lnkPath.c_str(), STGM_READ);
-
-            if (SUCCEEDED(hr))
+            if (SUCCEEDED(ppf->Load(lnkPath.c_str(), STGM_READ)))
             {
                 wchar_t targetPath[MAX_PATH];
-                hr = psl->GetPath(targetPath, MAX_PATH, NULL, SLGP_RAWPATH);
-
-                if (SUCCEEDED(hr))
+                if (SUCCEEDED(psl->GetPath(targetPath, MAX_PATH, NULL, SLGP_RAWPATH)))
                 {
                     std::wstring extension = fs::path(targetPath).extension().wstring();
                     isExe = (_wcsicmp(extension.c_str(), L".exe") == 0);
@@ -101,6 +100,8 @@ bool IsLinkToExe(const std::wstring &lnkPath)
         }
         psl->Release();
     }
+
+    if (initialized) CoUninitialize();
     return isExe;
 }
 
@@ -128,19 +129,7 @@ std::unordered_map<std::wstring, std::wstring> Searcher::FindInstalledApps()
                 continue;
 
             if (ext == L".lnk" && !IsLinkToExe(path.wstring()))
-            {
-                std::string pathStr;
-                try
-                {
-                    pathStr = path.string();
-                }
-                catch (...)
-                {
-                    pathStr = "unknown";
-                }
-                AppLog::AddLog("[INFO] Skipping " + pathStr + " because it's a .lnk that doesn't point to an .exe");
                 continue;
-            }
 
             std::wstring stem = path.stem().wstring(); // filename without extension
             int priority = GetPriority(ext);
