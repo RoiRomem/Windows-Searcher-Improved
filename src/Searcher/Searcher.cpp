@@ -9,6 +9,10 @@
 #include <codecvt>
 #include <locale>
 #include <string>
+#include <windows.h>
+#include <shlobj.h>
+#include <string>
+#include <filesystem>
 
 using namespace winrt;
 using namespace Windows::Management::Deployment;
@@ -65,6 +69,34 @@ std::vector<std::pair<std::wstring, std::wstring>> FindMCStoreApps()
     return results;
 }
 
+bool IsLinkToExe(const std::wstring& lnkPath) {
+    IShellLinkW* psl = nullptr;
+    bool isExe = false;
+
+    HRESULT hr = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLinkW, (LPVOID*)&psl);
+    if (SUCCEEDED(hr)) {
+        IPersistFile* ppf = nullptr;
+        hr = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+
+        if (SUCCEEDED(hr)) {
+            hr = ppf->Load(lnkPath.c_str(), STGM_READ);
+            
+            if (SUCCEEDED(hr)) {
+                wchar_t targetPath[MAX_PATH];
+                hr = psl->GetPath(targetPath, MAX_PATH, NULL, SLGP_RAWPATH);
+                
+                if (SUCCEEDED(hr)) {
+                    std::wstring extension = fs::path(targetPath).extension().wstring();
+                    isExe = (_wcsicmp(extension.c_str(), L".exe") == 0);
+                }
+            }
+            ppf->Release();
+        }
+        psl->Release();
+    }
+    return isExe;
+}
+
 /**
  * Scans all directories in 'dirs' and returns a map from
  * filename without extension to the path of the file with
@@ -87,7 +119,10 @@ std::unordered_map<std::wstring, std::wstring> Searcher::FindInstalledApps()
 
             if (!IsTargetExtension(ext))
                 continue;
-
+            
+            if (ext == L".lnk" && !IsLinkToExe(path.wstring()))
+                continue;
+                
             std::wstring stem = path.stem().wstring(); // filename without extension
             int priority = GetPriority(ext);
 
