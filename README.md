@@ -38,7 +38,7 @@ WSI is structured around a modular, performance-oriented architecture:
 ## Installation & Deployment
 
 ### Quick Start (Pre-compiled Binary)
-1. Download the latest `WSI.exe` from the [Releases](https://github.com/yourusername/WSI/releases) page.
+1. Download the latest `WSI.exe` from the [Releases](https://github.com/RoiRomem/Windows-Searcher-Improved/releases) page.
 2. Execute the binary. WSI will autonomously:
    - Index the local file system.
    - Hook the global system hotkey (`Ctrl + Space`).
@@ -57,7 +57,7 @@ WSI is structured around a modular, performance-oriented architecture:
 **Build Instructions:**
 1. Clone the repository:
    ```bash
-   git clone [https://github.com/yourusername/WSI.git](https://github.com/yourusername/WSI.git)
+   git clone https://github.com/RoiRomem/Windows-Searcher-Improved.git
    cd WSI
    ```
 2. Open the `.sln` file in Visual Studio.
