@@ -43,6 +43,6 @@ if %errorlevel% neq 0 (
 )
 
 echo [!] W secured. Launching WSI.exe...
-start WSI.exe
+start bin/WSI.exe
 
 endlocal

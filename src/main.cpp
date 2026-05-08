@@ -14,6 +14,7 @@ __      __  ____    ______
 #include <dwmapi.h>
 #include <iostream>
 #include "InputBuf/InputBuf.h"
+#include "helpers/AppLogs.h"
 
 std::unique_ptr<App> *appPtr = nullptr;
 
@@ -143,7 +144,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
             CreateRenderTarget();
         }
 
-        if (app->isSettingsActive)
+        if (app->isSettingsActive || ENABLE_APP_LOG)
         {
             SetWindowPos(hwnd, nullptr, 0, 0, (GetSystemMetrics(SM_CXSCREEN)), (GetSystemMetrics(SM_CYSCREEN)), SWP_NOZORDER);
             auto region = app->GetCombinedWindowRegion();

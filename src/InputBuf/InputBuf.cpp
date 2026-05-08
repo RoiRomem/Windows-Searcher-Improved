@@ -133,9 +133,8 @@ void InputBuf::Draw()
     oldInputBuf = GetBuffer();
 }
 
-std::wstring GetExtension(std::wstring str)
-{
-    return str.substr(str.length() >= 4 ? str.length() - 4 : 0);
+std::wstring GetExtension(const std::wstring& str) {
+    return std::filesystem::path(str).extension().wstring();
 }
 
 void InputBuf::ForceFocus()
