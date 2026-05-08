@@ -1,6 +1,7 @@
 #include "Runner.h"
 
 #include <iostream>
+#include <shellapi.h>
 
 bool looksLikeFile(std::wstring input) {
     if (input.empty()) return false;
