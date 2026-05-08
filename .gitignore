@@ -12,6 +12,8 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 compile_commands.json
+build/
+.cmake/
 
 # OS-specific
 .DS_Store

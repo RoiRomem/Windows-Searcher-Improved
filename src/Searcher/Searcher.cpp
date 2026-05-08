@@ -1,4 +1,7 @@
 #include "Searcher.h"
+#include <codecvt>
+#include <locale>
+#include <string>
 
 inline std::optional<std::wstring> safe_getenv_w(const char* var) {
     const char* val = std::getenv(var);

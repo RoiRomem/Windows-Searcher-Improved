@@ -48,7 +48,7 @@ int levenshtein_distance_optimized(const std::wstring& s1, const std::wstring& s
 
         for (size_t j = 1; j <= len2; ++j) {
             int cost = (s1[i - 1] == s2[j - 1]) ? 0 : 1;
-            curr[j] = std::min({
+            curr[j] = (std::min)({
                 prev[j] + 1,
                 curr[j - 1] + 1,
                 prev[j - 1] + cost
@@ -75,7 +75,7 @@ std::vector<std::pair<std::wstring, std::wstring>> CacheFind::GetClosestMatches(
 
     std::priority_queue<std::pair<int, std::pair<std::wstring, std::wstring>>> heap;
 
-    int maxDistance = std::min(static_cast<int>(input.length()) + 5, 10);
+    int maxDistance = (std::min)(static_cast<int>(input.length()) + 5, 10);
     const auto clean_input = RemoveWhitespace(ToLower(input));
 
     for (const auto& entry : CurrentMatches) {
@@ -106,7 +106,7 @@ std::vector<std::pair<std::wstring, std::wstring>> CacheFind::GetClosestMatches(
 
 std::vector<std::pair<std::wstring, std::wstring>> CacheFind::GetClosestMatchesSimple(const std::wstring& input, size_t maxResults) {
     std::vector<std::pair<int, std::pair<std::wstring, std::wstring>>> scored;
-    scored.reserve(std::min(CurrentMatches.size(), maxResults * 3));
+    scored.reserve((std::min)(CurrentMatches.size(), maxResults * 3));
 
     const auto input_lwr = RemoveWhitespace(ToLower(input));
 
@@ -114,7 +114,7 @@ std::vector<std::pair<std::wstring, std::wstring>> CacheFind::GetClosestMatchesS
         const auto entry = RemoveWhitespace(ToLower(entry_unfiltered.first));
 
         size_t commonPrefix = 0;
-        size_t minLen = std::min(input_lwr.length(), entry.length());
+        size_t minLen = (std::min)(input_lwr.length(), entry.length());
 
         for (size_t i = 0; i < minLen; ++i) {
             if (input_lwr[i] == entry[i]) {

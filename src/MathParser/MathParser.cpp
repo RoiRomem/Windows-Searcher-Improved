@@ -1,5 +1,7 @@
+#define _USE_MATH_DEFINES
 #include <cctype>
 #include <cmath>
+#include <math.h>
 #include <map>
 #include <stdexcept>
 #include <string>
