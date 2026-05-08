@@ -19,7 +19,7 @@ __      __  ____    ______
 std::unique_ptr<App> *appPtr = nullptr;
 
 // Main code
-//int main()
+// int main()
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     // Make process DPI aware and obtain main monitor scale
@@ -146,18 +146,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
         if (app->isSettingsActive || ENABLE_APP_LOG)
         {
-            SetWindowPos(hwnd, nullptr, 0, 0, (GetSystemMetrics(SM_CXSCREEN)), (GetSystemMetrics(SM_CYSCREEN)), SWP_NOZORDER);
-            auto region = app->GetCombinedWindowRegion();
-            SetWindowRgn(hwnd, region, TRUE);
-            DeleteObject(region);
+            SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_NOACTIVATE);
         }
         else
         {
-            SetWindowPos(hwnd, nullptr, (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2, (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2, scaledWidth, scaledHeight, SWP_NOZORDER);
-            auto region = app->GetCombinedWindowRegion();
-            SetWindowRgn(hwnd, region, TRUE);
-            DeleteObject(region);
+            SetWindowPos(hwnd, HWND_TOPMOST, (GetSystemMetrics(SM_CXSCREEN) - scaledWidth) / 2,
+                         (GetSystemMetrics(SM_CYSCREEN) - scaledHeight) / 2,
+                         scaledWidth, scaledHeight, SWP_NOACTIVATE);
         }
+
+        HRGN region = app->GetCombinedWindowRegion();
+        SetWindowRgn(hwnd, region, TRUE);
+        DeleteObject(region);
 
         if (app->settingsMenu->shouldUpdate)
         {
@@ -381,7 +381,7 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         if ((*appPtr)->active)
         {
             (*appPtr)->inputBuf->ForceFocus();
-            
+
             DWORD fgThread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
             DWORD thisThread = GetCurrentThreadId();
             AttachThreadInput(fgThread, thisThread, TRUE);

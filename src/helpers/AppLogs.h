@@ -2,7 +2,7 @@
 #include <string>
 #include "imgui.h"
 
-constexpr const bool ENABLE_APP_LOG = true;
+constexpr const bool ENABLE_APP_LOG = false;
 
 class AppLog
 {
