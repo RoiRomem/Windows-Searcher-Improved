@@ -10,7 +10,7 @@
 #include <cwctype>
 #include <unordered_map>
 
-#define DDG_SEARCH_URL L"duckduckgo.com/?t=ffab&q="
+constexpr const wchar_t* DDG_SEARCH_URL = L"duckduckgo.com/?t=ffab&q=";
 
 inline std::wstring wstrlwr(const std::wstring& input) {
     std::wstring out = input;

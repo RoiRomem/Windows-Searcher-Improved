@@ -22,7 +22,7 @@ private:
     char inputBuf[INPUT_BUFFER_LENGTH] = "";
     std::string oldInputBuf = "";
     int windowSize[2] = {0, 0};
-    std::array<std::wstring, 3> priorityList = {L".exe", L".lnk", L".url"};
+    std::array<std::wstring, 5> priorityList = {L"cmd",L"shell:", L".exe", L".lnk", L".url"};
     std::unique_ptr<Searcher> searcher;
     std::unique_ptr<CacheFind> cacheFind;
     void InputLogic();

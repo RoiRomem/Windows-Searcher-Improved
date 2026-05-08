@@ -9,14 +9,13 @@ private:
     std::vector<std::unordered_map<std::wstring, std::wstring>> cacheStack;
     std::wstring currentInput;
 
-    // Full dataset in wstring
     std::unordered_map<std::wstring, std::wstring> allItems;
 
     std::unordered_map<std::wstring, std::wstring> filterItems(
         const std::unordered_map<std::wstring, std::wstring>& sourceMap,
         const std::wstring& prefix);
 
-    void AddLetter(const std::wstring& prefix);  // prefix in wstring now
+    void AddLetter(const std::wstring& prefix);
     void RemoveLetter();
     void ResetCache();
 

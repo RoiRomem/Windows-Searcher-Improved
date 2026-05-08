@@ -150,15 +150,15 @@ std::vector<std::pair<std::wstring, std::wstring>> InputBuf::SortFindings(std::v
 {
     auto returnVector = std::vector<std::pair<std::wstring, std::wstring>>();
 
-    for (const auto &ext : priorityList)
+    for (const auto &type : priorityList)
     {
         auto it = findings.begin();
         while (it != findings.end())
         {
-            if (GetExtension(it->second) == ext)
+            if ((GetExtension(it->second) == type) || (type == L"shell:" && it->second.rfind(L"shell:", 0) == 0) || (type == L"cmd" && it->second == L""))
             {
                 returnVector.push_back(*it);
-                it = findings.erase(it); // erase returns the next valid iterator
+                it = findings.erase(it);
             }
             else
             {

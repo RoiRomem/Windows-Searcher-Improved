@@ -44,11 +44,9 @@ HRGN CreateRegionFromImGuiWindow(const char* windowName) {
     );
 }
 
-// In App.cpp or wherever you handle platform/window logic
 HRGN App::GetCombinedWindowRegion() const {
-    HRGN combined = CreateRectRgn(0, 0, 0, 0); // Start with empty
+    HRGN combined = CreateRectRgn(0, 0, 0, 0);
 
-    // Add inputBuf window
     if (inputBuf) {
         HRGN r1 = CreateRegionFromImGuiWindow("WSI");
         if (r1) {
@@ -57,7 +55,6 @@ HRGN App::GetCombinedWindowRegion() const {
         }
     }
 
-    // Add settingsMenu window if visible
     if (settingsMenu && isSettingsActive) {
         HRGN r2 = CreateRegionFromImGuiWindow("Settings");
         if (r2) {
